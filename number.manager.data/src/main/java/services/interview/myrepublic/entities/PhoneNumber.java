@@ -44,7 +44,7 @@ public class PhoneNumber extends AuditEntity {
 
 	@JoinTable(name = "Number_Addon", joinColumns = { @JoinColumn(name = "phone_number") }, inverseJoinColumns = {
 			@JoinColumn(name = "addon_id") })
-	private Set<CustomerAddOn> addOns = new HashSet<>();
+	private Set<PhoneNumberAddOn> addOns = new HashSet<>();
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "numbers")
 	private Set<Customer> numbers = new HashSet<>();
@@ -92,11 +92,11 @@ public class PhoneNumber extends AuditEntity {
 		this.version = version;
 	}
 
-	public Set<CustomerAddOn> getAddOns() {
+	public Set<PhoneNumberAddOn> getAddOns() {
 		return addOns;
 	}
 
-	public void setAddOns(Set<CustomerAddOn> addOns) {
+	public void setAddOns(Set<PhoneNumberAddOn> addOns) {
 		this.addOns = addOns;
 	}
 

@@ -1,8 +1,8 @@
-package services.interview.myrepublic.domain.vo;
+package services.interview.myrepublic.domain.dto;
 
 import java.util.Date;
 
-public class PhoneNumberHistoryDTO {
+public class PhoneNumberHistoryDTO extends PageInfo{
 
 	private String phoneNumber;
 	private String status;

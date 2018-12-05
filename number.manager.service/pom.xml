@@ -12,17 +12,14 @@
 		<dependencies>
 			<dependency>
 				<groupId>interview.myrepublic</groupId>
-				<artifactId>number.manager.domain</artifactId>
+				<artifactId>number.manager.data</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
-		<dependency>
-			<groupId>interview.myrepublic</groupId>
-			<artifactId>number.manager.domain</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>interview.myrepublic</groupId>
 			<artifactId>number.manager.data</artifactId>

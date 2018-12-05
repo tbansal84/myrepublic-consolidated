@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "CustomerAddOn")
 @NamedQuery(name = "CustomerAddOn.findAll", query = "SELECT c FROM CustomerAddOn c")
-public class CustomerAddOn implements Serializable {
+public class PhoneNumberAddOn implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -46,7 +46,7 @@ public class CustomerAddOn implements Serializable {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "addOns")
 	private Set<PhoneNumber> numbers = new HashSet<>();
 
-	public CustomerAddOn() {
+	public PhoneNumberAddOn() {
 	}
 
 	public long getId() {
