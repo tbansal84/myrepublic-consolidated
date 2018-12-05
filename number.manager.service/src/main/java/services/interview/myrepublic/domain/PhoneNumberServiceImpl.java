@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,15 +26,19 @@ import services.interview.myrepublic.repository.PhoneNumberStatusRepository;
 public class PhoneNumberServiceImpl implements PhoneNumberService {
 
 	enum PhoneNumberStatus {
-		ACTIVE("Active"), AVAIABLE("Available"), BLOCKED("Blocked");
+		ACTIVE("Active", new PhoneNumberDTO("Active", null, null)),
+		AVAIABLE("Available", new PhoneNumberDTO("Available", null, null)),
+		BLOCKED("Blocked", new PhoneNumberDTO("Blocked", null, null));
 		private String status;
+		private PhoneNumberDTO dto;
 
-		private PhoneNumberStatus(String status) {
+		private PhoneNumberStatus(String status, PhoneNumberDTO dto) {
 			this.status = status;
+			this.dto = dto;
 		}
 
-		public static PhoneNumberDTO exampleWithStatus(PhoneNumberStatus status) {
-			return new PhoneNumberDTO(status.status, null, null);
+		public PhoneNumberDTO getDto() {
+			return dto;
 		}
 
 	}
@@ -123,21 +128,16 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
 
 		try {
 			Optional<NumberStatus> o = phoneNumberStatusRepository.findById(phoneNumberDTO.getStatus());
-			NumberStatus status = null;
-			if (o.isPresent()) {
-				status = o.get();
-			}
-			PhoneNumber phoneNumber = null;
-			if (status != null) {
+
+			o.ifPresent(status -> {
 				Optional<PhoneNumber> o1 = phoneNumberRepository.findById(phoneNumberDTO.getPhoneNumber());
-				if (o.isPresent()) {
-					phoneNumber = o1.get();
+				o1.ifPresent(phoneNumber -> {
 					phoneNumber.setStatus(status);
-				}
-			} else {
-				throw new PhoneServiceDomainException("Status could not be found");
-			}
-			phoneNumberRepository.save(phoneNumber);
+					phoneNumberRepository.save(phoneNumber);
+
+				});
+
+			});
 		} catch (Exception e) {
 			logger.error("Exception" + e.getMessage());
 			throw new PhoneServiceDomainException();
@@ -158,13 +158,12 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
 
 		try {
 			Optional<NumberStatus> o = phoneNumberStatusRepository.findById(phoneNumberDTO.getStatus());
-			NumberStatus status = null;
-			if (o.isPresent()) {
-				status = o.get();
-			}
-			PhoneNumber phoneNumber = new PhoneNumber();
-			phoneNumber.setStatus(status);
-			phoneNumberRepository.save(phoneNumber);
+			o.ifPresent(status -> {
+				PhoneNumber phoneNumber = new PhoneNumber();
+				phoneNumber.setStatus(status);
+				phoneNumberRepository.save(phoneNumber);
+			});
+
 		} catch (Exception e) {
 			logger.error("Exception" + e.getMessage());
 			throw new PhoneServiceDomainException();
@@ -197,11 +196,10 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
 	}
 
 	@Override
-	public List<PhoneNumberDTO> search(PhoneNumberDTO PhoneNumberServiceDTO, Pageable pageable)
+	public Page<PhoneNumber> search(PhoneNumberDTO PhoneNumberServiceDTO, Pageable pageable)
 			throws PhoneServiceDomainException {
-		phoneNumberRepository.findAll(Example.of(phoneNumberMapper.phoneNumberDTOToPhoneNumber(PhoneNumberServiceDTO)),
+		return phoneNumberRepository.findAll(Example.of(phoneNumberMapper.phoneNumberDTOToPhoneNumber(PhoneNumberServiceDTO)),
 				pageable);
-		return null;
 	}
 
 	@Override
@@ -213,8 +211,8 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
 
 	@Override
 	public List<PhoneNumberDTO> findAvailableNumber(Pageable pageable) throws PhoneServiceDomainException {
-		Example<PhoneNumber> example = Example.of(phoneNumberMapper
-				.phoneNumberDTOToPhoneNumber(PhoneNumberStatus.exampleWithStatus(PhoneNumberStatus.AVAIABLE)));
+		Example<PhoneNumber> example = Example
+				.of(phoneNumberMapper.phoneNumberDTOToPhoneNumber(PhoneNumberStatus.AVAIABLE.getDto()));
 		List<PhoneNumberDTO> avaiables = phoneNumberMapper
 				.phoneNumberToPhoneNumberDTO(phoneNumberRepository.findAll(example));
 		return avaiables;

@@ -2,10 +2,12 @@ package services.interview.myrepublic.domain;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import services.interview.myrepublic.domain.dto.PhoneNumberDTO;
 import services.interview.myrepublic.domain.exceptions.PhoneServiceDomainException;
+import services.interview.myrepublic.entities.PhoneNumber;
 
 public interface PhoneNumberService {
 
@@ -20,7 +22,7 @@ public interface PhoneNumberService {
 
 	List<PhoneNumberDTO> findAvailableNumber(Pageable pageable) throws PhoneServiceDomainException;
 
-	List<PhoneNumberDTO> search(PhoneNumberDTO PhoneNumberServiceDTO, Pageable pageable)
+	Page<PhoneNumber> search(PhoneNumberDTO PhoneNumberServiceDTO, Pageable pageable)
 			throws PhoneServiceDomainException;
 
 }
